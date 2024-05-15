@@ -50,6 +50,15 @@ router.post('/', authMiddleware, async (req: any, res) => {
       pastriesWon = 1;
     }
 
+    // Check le stock des pâtisseries
+    const pastries = await Pastry.find();
+    const totalStock = pastries.reduce((sum, pastry) => sum + pastry.stock, 0);
+
+    // Si le stock est inférieur au nombre de pâtisseries à gagner, le nombre de pâtisseries gagnées prend la valeur du stock restant
+    if (pastriesWon > totalStock) {
+      pastriesWon = totalStock;
+    }
+
     // Mettre à jour les données de l'utilisateur
     user.gameData.attemptsRemaining -= 1;
 

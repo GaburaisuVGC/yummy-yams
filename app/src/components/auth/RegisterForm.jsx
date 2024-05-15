@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 // src/components/auth/RegisterForm.js
 import React, { useState } from 'react';
-import { register } from '../../services/authService';
+import { register, login } from '../../services/authService';
 
 const RegisterForm = () => {
   const [username, setUsername] = useState('');
@@ -28,6 +28,10 @@ const RegisterForm = () => {
 
     try {
       await register(username, password);
+      // Se connecter immédiatement après l'inscription
+      const token = await login(username, password);
+      // Stocker le token dans le local storage
+      localStorage.setItem('token', token);
       // Rediriger vers la page d'accueil
       window.location.href = '/';
     } catch (error) {
