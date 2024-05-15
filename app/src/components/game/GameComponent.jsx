@@ -8,6 +8,7 @@ const GameComponent = ({ token }) => {
   const [pastry, setPastry] = useState(false);
   const [dices, setDices] = useState([0, 0, 0, 0, 0]);
   const [pastries, setPastries] = useState([]);
+  const animationDuration = useRef(0); // Ref to store the animation duration
   const API_URL = import.meta.env.VITE_REACT_APP_API_URL;
 
   useEffect(() => {
@@ -44,9 +45,13 @@ const GameComponent = ({ token }) => {
       });
       setDices(response.data.dices);
       setAttempts(response.data.attemptsRemaining);
+
       if (response.data.pastriesWon && response.data.pastriesWon.length) {
-        setPastry(true);
-        setPastries(response.data.pastriesWon);
+        // Delay the pastry state update until the animation is finished
+        setTimeout(() => {
+          setPastry(true);
+          setPastries(response.data.pastriesWon);
+        }, animationDuration.current);
       }
     } catch (error) {
       console.error('Error rolling dice:', error.message);
@@ -57,54 +62,55 @@ const GameComponent = ({ token }) => {
     <div>
       {/* Afficher les dés */}
       {dices.map((dice, index) => (
-        <Dice key={index} value={dice} />
+        <Dice key={index} value={dice} animationDuration={animationDuration} />
       ))}
       {/* Afficher le bouton pour lancer les dés */}
       <div className="actions">
-      {attempts === 0 || pastry ? (
-        <button disabled>Vous ne pouvez plus jouer.</button>
-      ) : (
-        <button onClick={launch}>JOUER [{attempts}]</button>
-      )}
+        {attempts === 0 || pastry ? (
+          <button disabled>Vous ne pouvez plus jouer.</button>
+        ) : (
+          <button onClick={launch}>JOUER [{attempts}]</button>
+        )}
       </div>
 
       {/* Afficher les pâtisseries gagnées si l'utilisateur a gagné */}
       {pastry && <p className="congratulations">Félicitations! Vous avez gagné !</p>}
-{pastries.length > 0 && (
-  <div>
-    <h2 className="pastries-title">Vos gâteaux gagnés</h2>
-    <div className="pastries-container">
-      {pastries.map((pastry, index) => (
-        <div key={index} className="pastry-card">
-          <img src={`/src/assets/images/${pastry.image}`} alt={pastry.name} className="pastry-image" />
-          <p className="pastry-name">{pastry.name}</p>
-          <p className="pastry-date">Gagné le {new Date(pastry.wonAt).toLocaleDateString()}</p>
+      {pastries.length > 0 && (
+        <div>
+          <h2 className="pastries-title">Vos gâteaux gagnés</h2>
+          <div className="pastries-container">
+            {pastries.map((pastry, index) => (
+              <div key={index} className="pastry-card">
+                <img src={`/src/assets/images/${pastry.image}`} alt={pastry.name} className="pastry-image" />
+                <p className="pastry-name">{pastry.name}</p>
+                <p className="pastry-date">Gagné le {new Date(pastry.wonAt).toLocaleDateString()}</p>
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
-    </div>
-  </div>
-)}
-
+      )}
     </div>
   );
 };
 
 // Composant pour afficher un dé
-const Dice = ({ value }) => {
+const Dice = ({ value, animationDuration }) => {
   const faces = [value, ...gsap.utils.shuffle([1, 2, 3, 4, 5, 6].filter((v) => v !== value))];
   const dice = useRef();
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(dice.current, {
+      const tl = gsap.timeline();
+      tl.from(dice.current, {
         rotationX: 'random(720, 1080)',
         rotationY: 'random(720, 1080)',
         rotationZ: 0,
         duration: 'random(2, 3)',
       });
+      animationDuration.current = Math.max(animationDuration.current, tl.duration() * 1000); // Store the max duration
     }, dice);
     return () => ctx.revert();
-  }, [value]);
+  }, [value, animationDuration]);
 
   return (
     <div className="dice-container">
@@ -118,4 +124,5 @@ const Dice = ({ value }) => {
     </div>
   );
 };
+
 export default GameComponent;
