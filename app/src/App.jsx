@@ -88,7 +88,7 @@ const App = () => {
       </nav>
       <h1 style={{ marginTop: "20px" }}>Yummy Yam's</h1>
       <p style={{ marginBottom: "20px", marginTop: "20px" }}>
-        Bienvenue sur le site Yummy Yam's, où vous pouvez de gagner des pâtisseries en jouant à un jeu de dés.
+        Bienvenue sur le site Yummy Yam's, où vous pouvez gagner des pâtisseries en jouant à un jeu de dés.
       </p>
 
       {/* si le stock est épuisé, afficher la liste des gagnants */}
