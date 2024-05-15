@@ -15,7 +15,7 @@ const App = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [username, setUsername] = useState('');
   const [token, setToken] = useState('');
-  const [isOutOfStock, setIsOutOfStock] = useState(true);
+  const [isOutOfStock, setIsOutOfStock] = useState(false);
   const [usersWithPastries, setUsersWithPastries] = useState([]);
   const API_URL = import.meta.env.VITE_REACT_APP_API_URL;
 
