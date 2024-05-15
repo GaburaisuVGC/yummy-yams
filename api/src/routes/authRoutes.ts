@@ -3,16 +3,40 @@ import express, { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
+import { body, validationResult } from 'express-validator';
 
 const router = express.Router();
 
+// Middleware de validation
+const validateRegister = [
+  body('username').isAlphanumeric().withMessage('Le pseudo ne doit contenir que des lettres et des chiffres.'),
+  body('password').isLength({ min: 6 }).withMessage('Le mot de passe doit contenir au moins 6 caractères.')
+];
+
+const validateLogin = [
+  body('username').isAlphanumeric().withMessage('Le pseudo ne doit contenir que des lettres et des chiffres.'),
+  body('password').isLength({ min: 6 }).withMessage('Le mot de passe doit contenir au moins 6 caractères.')
+];
+
 // Route pour enregistrer un nouvel utilisateur
-router.post('/register', async (req: Request, res: Response) => {
+router.post('/register', validateRegister, async (req: Request, res: Response) => {
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     const { username, password } = req.body;
     // Vérifier si le nom d'utilisateur ou le mot de passe est manquant
     if (!username || !password) {
       return res.status(400).json({ message: 'Missing username or password' });
+    }
+
+    // Vérifier si le nom d'utilisateur existe déjà
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Le pseudo est déjà utilisé.' });
     }
 
     // Hasher le mot de passe
@@ -28,7 +52,13 @@ router.post('/register', async (req: Request, res: Response) => {
 });
 
 // Route pour connecter un utilisateur
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', validateLogin, async (req: Request, res: Response) => {
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  
   try {
     const { username, password } = req.body;
     const user = await User.findOne({ username });

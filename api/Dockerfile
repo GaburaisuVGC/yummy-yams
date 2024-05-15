@@ -6,7 +6,7 @@ COPY package.json .
 COPY tsconfig.json .
 
 RUN npm install\
-    && npm install -g typescript tsx
+    && npm install -g typescript tsx express-validator
 
 COPY . .
 
