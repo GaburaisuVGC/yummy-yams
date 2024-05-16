@@ -1,6 +1,13 @@
 # Yummy Yam's
 
-Bienvenue sur le projet Yummy Yam's, où le plaisir du jeu se mêle à la gourmandise des pâtisseries !
+Bienvenue sur le projet Yummy Yam's, où un potentiel nouveau client peut gagner des pâtisseries en lançant des dés.
+
+## Attention !
+
+- Il faut patienter quelques secondes après que docker lance les 3 containers, avant de lancer le front.
+- Lors de votre premier docker-compose up, il se peut que l'api n'arrive pas à se connecter à la DB. Il suffit de relancer la commande pour que tout soit en ordre.
+
+
 
 ## Prérequis
 
@@ -19,7 +26,7 @@ Créez deux fichiers `.env`, un pour le backend (`api`) et un pour le frontend (
 #### .env pour `api` :
 
 ```
-MONGO_URI=your_mongo_connection_string
+MONGO_URI=mongodb://mongo:27017/yummy-yams
 JWT_SECRET=your_jwt_secret
 ```
 

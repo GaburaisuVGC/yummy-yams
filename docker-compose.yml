@@ -30,3 +30,5 @@ services:
       - 27017:27017
     volumes:
       - ./data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./pastries.json:/docker-entrypoint-initdb.d/pastries.json:ro
